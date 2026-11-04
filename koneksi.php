@@ -5,10 +5,10 @@
 // ==============================================================================
 
 // 1. PENGATURAN DEFAULT (LOCALHOST XAMPP)
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "db_sistem_pakar_kulit";
+$host = "sql308.infinityfree.com";
+$user = "if0_43356709";
+$pass = "4rgon123";
+$db   = "if0_43356709_db_kulit";
 
 // 2. JIKA DI-DEPLOY DI HOSTING ONLINE (Misal: InfinityFree / cPanel)
 // Cukup hilangkan tanda komentar (//) di bawah ini dan masukkan data dari cPanel hosting Anda:

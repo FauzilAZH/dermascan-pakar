@@ -107,6 +107,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_diagnosa'])) {
         }
     }
 }
+// Handler Ubah Password
+$pesan_password = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_ubah_password'])) {
+    $pass_lama    = $_POST['pass_lama'] ?? '';
+    $pass_baru    = $_POST['pass_baru'] ?? '';
+    $pass_konfirm = $_POST['pass_konfirm'] ?? '';
+
+    $q_user = mysqli_query($koneksi, "SELECT * FROM users WHERE username = 'admin' LIMIT 1");
+    $data_admin = mysqli_fetch_assoc($q_user);
+
+    if ($data_admin) {
+        if ($pass_lama !== $data_admin['password']) {
+            $pesan_password = ['type' => 'danger', 'text' => 'Password lama yang Anda masukkan salah!'];
+        } elseif (strlen($pass_baru) < 4) {
+            $pesan_password = ['type' => 'warning', 'text' => 'Password baru minimal harus 4 karakter!'];
+        } elseif ($pass_baru !== $pass_konfirm) {
+            $pesan_password = ['type' => 'warning', 'text' => 'Konfirmasi password baru tidak cocok!'];
+        } else {
+            $stmt = mysqli_prepare($koneksi, "UPDATE users SET password = ? WHERE username = 'admin'");
+            mysqli_stmt_bind_param($stmt, "s", $pass_baru);
+            if (mysqli_stmt_execute($stmt)) {
+                $pesan_password = ['type' => 'success', 'text' => 'Password Administrator berhasil diperbarui!'];
+            } else {
+                $pesan_password = ['type' => 'danger', 'text' => 'Gagal memperbarui password di database.'];
+            }
+        }
+    }
+    $page = 'password';
+}
+
+// Handler Tambah User Baru
+$pesan_user = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah_user'])) {
+    $nama_baru = mysqli_real_escape_string($koneksi, trim($_POST['nama_lengkap'] ?? ''));
+    $user_baru = mysqli_real_escape_string($koneksi, trim($_POST['username'] ?? ''));
+    $pwd_baru  = mysqli_real_escape_string($koneksi, trim($_POST['password'] ?? ''));
+    $role_baru = mysqli_real_escape_string($koneksi, trim($_POST['role'] ?? 'user'));
+
+    if (!empty($nama_baru) && !empty($user_baru) && !empty($pwd_baru)) {
+        $ins = mysqli_query($koneksi, "INSERT INTO users (nama_lengkap, username, password, role, status) VALUES ('$nama_baru', '$user_baru', '$pwd_baru', '$role_baru', 'aktif')");
+        if ($ins) {
+            $pesan_user = ['type' => 'success', 'text' => "Pengguna <b>$user_baru</b> ($nama_baru) berhasil ditambahkan ke database!"];
+        } else {
+            $pesan_user = ['type' => 'danger', 'text' => "Gagal menambahkan pengguna. Username mungkin sudah terdaftar."];
+        }
+    }
+    $page = 'user';
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -393,9 +442,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_diagnosa'])) {
         <i class="fas fa-bars"></i>
       </a>
     </div>
-    <div class="user-badge">
-      <span class="user-avatar">S</span>
-      <span>Admin</span>
+        <!-- User Profile Dropdown Interaktif -->
+    <div class="dropdown">
+      <a href="#" class="user-badge dropdown-toggle text-white text-decoration-none" id="dropdownUser" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="user-avatar">S</span>
+        <span>Admin</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right shadow border-0 mt-2" aria-labelledby="dropdownUser" style="border-radius: 8px; min-width: 230px;">
+        <div class="px-3 py-2 border-bottom bg-light">
+          <small class="text-muted d-block font-weight-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">LOGIN SEBAGAI</small>
+          <div class="font-weight-bold text-dark">Administrator Klinik</div>
+          <span class="badge badge-success mt-1" style="font-size: 0.7rem;">Super Admin</span>
+        </div>
+        <a class="dropdown-item py-2 small" href="?page=user"><i class="fas fa-users-cog mr-2 text-info"></i> Data Pengguna</a>
+        <a class="dropdown-item py-2 small" href="?page=password"><i class="fas fa-key mr-2 text-warning"></i> Ubah Password</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item py-2 small text-secondary" href="javascript:void(0)" onclick="alert('Info Sesi:
+Login sebagai: Administrator Klinik (admin)
+Peran: Super Admin
+Status: Aktif');"><i class="fas fa-id-badge mr-2 text-primary"></i> Detail Profil</a>
+      </div>
     </div>
   </header>
 
@@ -1008,6 +1074,123 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_diagnosa'])) {
           </div>
         </div>
 
+            <?php elseif ($page === 'user'): ?>
+        <!-- ==================== TAMPILAN DATA USER ==================== -->
+        <div class="page-title d-flex justify-content-between align-items-center">
+          <div><i class="fas fa-users-cog"></i> Manajemen Data Pengguna (Users)</div>
+          <button class="btn btn-sm text-white" style="background-color: var(--primary-teal);" data-toggle="modal" data-target="#modalTambahUser">
+            <i class="fas fa-user-plus mr-1"></i> Tambah Pengguna
+          </button>
+        </div>
+
+        <?php if ($pesan_user): ?>
+          <div class="alert alert-<?= $pesan_user['type'] ?> alert-dismissible fade show" role="alert">
+            <?= $pesan_user['text'] ?>
+            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+          </div>
+        <?php endif; ?>
+
+        <div class="card border-0 shadow-sm p-4">
+          <p class="text-muted small">Daftar akun pengguna dan administrator yang terdaftar di basis data <code>users</code>.</p>
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered small">
+              <thead class="thead-light">
+                <tr>
+                  <th width="5%" class="text-center">No</th>
+                  <th>Nama Lengkap</th>
+                  <th>Username</th>
+                  <th>Role Hak Akses</th>
+                  <th>Status Akun</th>
+                  <th width="15%" class="text-center">Aksi / ID</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                $q_all_users = mysqli_query($koneksi, "SELECT * FROM users ORDER BY id_user ASC");
+                $no_u = 1;
+                while ($u = mysqli_fetch_assoc($q_all_users)):
+                ?>
+                  <tr>
+                    <td class="text-center"><?= $no_u++ ?></td>
+                    <td class="font-weight-bold text-dark"><?= htmlspecialchars($u['nama_lengkap']) ?></td>
+                    <td><code><?= htmlspecialchars($u['username']) ?></code></td>
+                    <td>
+                      <span class="badge badge-<?= $u['role'] === 'admin' ? 'success' : 'secondary' ?> p-1">
+                        <i class="fas <?= $u['role'] === 'admin' ? 'fa-user-cog' : 'fa-user' ?>"></i> <?= ucfirst($u['role']) ?>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge badge-<?= $u['status'] === 'aktif' ? 'primary' : 'danger' ?> p-1">
+                        <?= ucfirst($u['status']) ?>
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge badge-light border text-muted">ID: #<?= $u['id_user'] ?></span>
+                    </td>
+                  </tr>
+                <?php endwhile; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      <?php elseif ($page === 'password'): ?>
+        <!-- ==================== TAMPILAN UBAH PASSWORD ==================== -->
+        <div class="page-title">
+          <i class="fas fa-lock"></i> Ubah Password Administrator
+        </div>
+
+        <?php if ($pesan_password): ?>
+          <div class="alert alert-<?= $pesan_password['type'] ?> alert-dismissible fade show" role="alert">
+            <?= $pesan_password['text'] ?>
+            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+          </div>
+        <?php endif; ?>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm p-4">
+              <h6 class="font-weight-bold text-dark mb-3"><i class="fas fa-shield-alt mr-1" style="color: var(--primary-teal);"></i> Formulir Penggantian Password</h6>
+              <p class="text-muted small">Silakan perbarui kata sandi akun <b>admin</b> untuk menjaga keamanan basis data sistem pakar.</p>
+
+              <form method="POST" action="?page=password">
+                <div class="form-group">
+                  <label class="small font-weight-bold">Password Saat Ini (Lama)</label>
+                  <input type="password" name="pass_lama" class="form-control form-control-sm" placeholder="Ketik password lama Anda..." required>
+                  <small class="text-muted">Password awal bawaan database: <code>admin123</code></small>
+                </div>
+                <div class="form-group">
+                  <label class="small font-weight-bold">Password Baru</label>
+                  <input type="password" name="pass_baru" class="form-control form-control-sm" placeholder="Ketik password baru minimal 4 karakter..." required>
+                </div>
+                <div class="form-group">
+                  <label class="small font-weight-bold">Konfirmasi Password Baru</label>
+                  <input type="password" name="pass_konfirm" class="form-control form-control-sm" placeholder="Ulangi ketik password baru..." required>
+                </div>
+                <button type="submit" name="proses_ubah_password" class="btn text-white btn-sm px-4 mt-2" style="background-color: var(--primary-teal);">
+                  <i class="fas fa-save mr-1"></i> Simpan Perubahan Password
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm p-4 bg-light">
+              <h6 class="font-weight-bold text-dark mb-2"><i class="fas fa-info-circle mr-1" style="color: var(--primary-teal);"></i> Akun Terdaftar & Keamanan</h6>
+              <p class="small text-muted mb-3">Informasi akun administrator yang sedang login saat ini:</p>
+              <ul class="small pl-3 mb-3 text-secondary">
+                <li><strong>Username:</strong> <code>admin</code></li>
+                <li><strong>Nama Pengguna:</strong> Administrator Klinik</li>
+                <li><strong>Peran:</strong> Super Admin (Pakar Kulit)</li>
+                <li><strong>Status Akun:</strong> Aktif & Terverifikasi</li>
+              </ul>
+              <div class="alert alert-info py-2 small mb-0">
+                <i class="fas fa-lightbulb mr-1"></i> <strong>Tips Keamanan:</strong> Gunakan kombinasi huruf dan angka agar kata sandi tidak mudah ditebak oleh pihak lain.
+              </div>
+            </div>
+          </div>
+        </div>
+
       <?php else: ?>
         <!-- Default Fallback ke Dashboard -->
         <script>window.location.href = "?page=dashboard";</script>
@@ -1033,6 +1216,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_diagnosa'])) {
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah User -->
+  <div class="modal fade" id="modalTambahUser" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-white" style="background-color: var(--primary-teal);">
+          <h6 class="modal-title font-weight-bold"><i class="fas fa-user-plus mr-1"></i> Tambah Pengguna Baru</h6>
+          <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+        </div>
+        <form method="POST" action="?page=user">
+          <div class="modal-body small">
+            <div class="form-group">
+              <label class="font-weight-bold">Nama Lengkap</label>
+              <input type="text" name="nama_lengkap" class="form-control form-control-sm" placeholder="Contoh: dr. Budi Santoso, Sp.KK" required>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold">Username</label>
+              <input type="text" name="username" class="form-control form-control-sm" placeholder="Contoh: budi_spkk" required>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold">Password</label>
+              <input type="password" name="password" class="form-control form-control-sm" placeholder="Masukkan password..." required>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold">Peran (Role)</label>
+              <select name="role" class="form-control form-control-sm">
+                <option value="user">User / Pasien</option>
+                <option value="admin">Administrator / Dokter Pakar</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
+            <button type="submit" name="tambah_user" class="btn text-white btn-sm" style="background-color: var(--primary-teal);">Simpan Pengguna</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

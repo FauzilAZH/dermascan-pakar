@@ -117,6 +117,49 @@ Aplikasi ini telah disediakan dalam versi **`index.html` mandiri (Static App)** 
 
 ---
 
+## 🌐 Panduan Deploy PHP & MySQL Online Gratis (InfinityFree)
+
+Jika Anda ingin website versi **PHP + MySQL** aktif online (bukan hanya versi statis HTML), gunakan **InfinityFree** karena menyediakan server Apache, PHP 8.x, MySQL, dan **phpMyAdmin online gratis selamanya**:
+
+### Langkah 1: Pendaftaran Akun Hosting
+1. Buka [https://www.infinityfree.com](https://www.infinityfree.com) dan klik **Register Now**.
+2. Masukkan email dan password Anda, lalu verifikasi email yang masuk.
+3. Klik **Create Account**.
+4. Pilih **Free Domain** (contoh: `dermascan-pakar.infinityfreeapp.com`).
+5. Klik **Create Account** hingga akun hosting berhasil dibuat.
+
+### Langkah 2: Buat Database MySQL & Import Data
+1. Dari dashboard InfinityFree, klik **Manage** pada akun Anda, lalu klik **Control Panel (cPanel)**.
+2. Di dalam cPanel, pilih menu **MySQL Databases**.
+3. Buat nama database baru, misalnya `db_kulit` -> klik **Create Database**.
+4. Catat data yang ditampilkan:
+   * **MySQL Hostname** (contoh: `sql123.infinityfree.com`)
+   * **MySQL Username** (contoh: `if0_38492019`)
+   * **MySQL Database Name** (contoh: `if0_38492019_db_kulit`)
+   * **MySQL Password** (sama dengan password akun vPanel Anda)
+5. Klik tombol **phpMyAdmin** di sebelah database yang baru dibuat.
+6. Pada halaman phpMyAdmin online, klik tab **Import** di bagian atas.
+7. Klik **Choose File**, pilih file `database_sistem_pakar_kulit.sql` dari laptop Anda, lalu klik **Go / Kirim**.
+8. Semua 5 tabel (`tb_penyakit`, `tb_gejala`, `tb_aturan`, `tb_riwayat`, `tb_user`) beserta seluruh 15 penyakit dan 68 gejala akan langsung masuk ke database online!
+
+### Langkah 3: Konfigurasi `koneksi.php` & Upload File
+1. Buka file `koneksi.php` dan sesuaikan kredensial MySQL dengan data yang Anda catat di Langkah 2:
+   ```php
+   $host = "sql123.infinityfree.com"; // ganti dengan Hostname Anda
+   $user = "if0_38492019";            // ganti dengan Username Anda
+   $pass = "password_akun_anda";      // ganti dengan Password Anda
+   $db   = "if0_38492019_db_kulit";   // ganti dengan DB Name Anda
+   ```
+2. Kembali ke cPanel InfinityFree, buka menu **Online File Manager**.
+3. Masuk ke folder **`htdocs`**.
+4. Hapus file bawaan `index2.html` (jika ada).
+5. Klik tombol **Upload** (ikon panah ke atas) -> pilih **Upload File**:
+   * Upload `index.php`
+   * Upload `koneksi.php` yang sudah disesuaikan
+6. Selesai! Buka domain Anda (misal: `http://dermascan-pakar.infinityfreeapp.com`) di browser laptop atau HP Anda. Sistem pakar PHP + MySQL Anda sudah online 100%!
+
+---
+
 ## 📁 Struktur File Proyek
 
 ```text

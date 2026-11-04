@@ -1,0 +1,147 @@
+@startuml ClassDiagram_Sistem_Pakar_Kulit
+
+' ====================================================================
+' Class Diagram: Sistem Pakar Diagnosa Penyakit Kulit (Klinik Restu Ibu)
+' Metode: Forward Chaining & Certainty Factor
+' Acuan: Gambar 4 (Halaman 809 Jurnal JRAMI 2026)
+' Tool Online: https://www.planttext.com
+' ====================================================================
+
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam class {
+    BackgroundColor #FFFFFF
+    ArrowColor #00796B
+    BorderColor #004D40
+}
+
+title **CLASS DIAGRAM SISTEM PAKAR DIAGNOSA PENYAKIT KULIT**\n**KLINIK RESTU IBU (FORWARD CHAINING & CERTAINTY FACTOR)**\n
+
+class Users {
+    - id_user : int
+    - nama_lengkap : string
+    - username : string
+    - password : string
+    - role : enum
+    - status : enum
+    - created_at : datetime
+    - updated_at : datetime
+    --
+    + login() : bool
+    + logout() : void
+    + ubahPassword(newPass: string) : bool
+}
+
+class Konsultasi {
+    - id_konsultasi : int
+    - id_user : int
+    - nama_pasien : string
+    - usia : int
+    - jenis_kelamin : enum
+    - tanggal : datetime
+    - hasil_penyakit : string
+    - nilai_cf : decimal
+    - persentase : string
+    - created_at : datetime
+    --
+    + validasiInput() : bool
+    + prosesDiagnosis() : void
+    + simpan() : bool
+}
+
+class DetailKonsultasi {
+    - id_detail : int
+    - id_konsultasi : int
+    - id_gejala : int
+    - cf_user : decimal
+    --
+    + simpanGejalaTerpilih() : bool
+}
+
+class Gejala {
+    - id_gejala : int
+    - kode_gejala : string
+    - nama_gejala : string
+    - created_at : datetime
+    - updated_at : datetime
+    --
+    + tambah() : bool
+    + ubah() : bool
+    + hapus() : bool
+}
+
+class Penyakit {
+    - id_penyakit : int
+    - kode_penyakit : string
+    - nama_penyakit : string
+    - kategori : enum
+    - deskripsi : string
+    - solusi : string
+    - pencegahan : string
+    - tingkat_keparahan : enum
+    - saran_tindak_lanjut : string
+    - foto : string
+    - created_at : datetime
+    - updated_at : datetime
+    --
+    + tampilkanSolusi() : string
+    + tampilkanPencegahan() : string
+    + uploadFoto() : string
+}
+
+class Rule {
+    - id_rule : int
+    - kode_basis : string
+    - id_penyakit : int
+    - id_gejala : int
+    - cf_pakar : decimal
+    - created_at : datetime
+    - updated_at : datetime
+    --
+    + hitungCFGejala() : decimal
+    + generateKodeBasis() : string
+}
+
+class HasilKonsultasi {
+    - id_hasil : int
+    - id_konsultasi : int
+    - id_penyakit : int
+    - nilai_cf : decimal
+    - persentase : decimal
+    - ranking : int
+    --
+    + hasilPersentase() : decimal
+    + tentukanRanking() : int
+}
+
+class Pengaturan {
+    - id_pengaturan : int
+    - nama_aplikasi : string
+    - nama_instansi : string
+    - logo : string
+    - disclaimer_text : string
+    - footer_text : string
+    - updated_at : datetime
+    --
+    + simpanPengaturan() : bool
+    + tampilkanIdentitasAplikasi() : void
+}
+
+' ====================================================================
+' Hubungan Relasi & Kardinalitas (Multiplicity)
+' ====================================================================
+
+Users "1" -- "0..*" Konsultasi : melakukan >
+Konsultasi "1" *-- "1..*" DetailKonsultasi : memiliki >
+Gejala "1" -- "0..*" DetailKonsultasi : dipilih dalam >
+
+Konsultasi "1" -- "1..*" HasilKonsultasi : menghasilkan >
+Penyakit "1" -- "0..*" HasilKonsultasi : menjadi hasil >
+
+Penyakit "1" *-- "1..*" Rule : memiliki >
+Gejala "1" -- "1..*" Rule : digunakan pada >
+
+@enduml
+

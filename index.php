@@ -428,9 +428,147 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah_user'])) {
       color: #fff;
       text-decoration: none;
     }
+
+    /* =======================================================
+       RESPONSIVE MOBILE STYLES (Dermascan Pakar)
+       ======================================================= */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(3px);
+      z-index: 1045;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .sidebar-backdrop.show {
+      display: block;
+      opacity: 1;
+    }
+
+    .sidebar-mobile-header {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .main-header {
+        padding: 0 12px;
+      }
+      .main-header .brand-logo {
+        width: auto !important;
+        padding-left: 0 !important;
+        font-size: 1.05rem !important;
+        background-color: transparent !important;
+      }
+      .main-header .sidebar-toggle {
+        font-size: 1.25rem;
+        padding: 6px 10px;
+        margin-right: 4px;
+      }
+      .user-badge {
+        font-size: 0.85rem;
+      }
+      .user-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+        margin-right: 6px;
+      }
+
+      /* Sidebar Drawer Off-Canvas */
+      .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -270px !important;
+        width: 260px !important;
+        height: 100vh !important;
+        z-index: 1050 !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3) !important;
+        overflow-y: auto !important;
+        display: block !important;
+      }
+      .sidebar.open {
+        left: 0 !important;
+      }
+      .sidebar-mobile-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        background-color: var(--primary-dark);
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .sidebar-mobile-header .close-btn {
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.25rem;
+        padding: 4px 8px;
+        cursor: pointer;
+      }
+
+      /* Content Area on Mobile */
+      .content-area {
+        padding: 16px 12px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .page-title {
+        font-size: 1.25rem !important;
+        margin-bottom: 14px !important;
+      }
+
+      /* Stat Cards 2x2 Grid */
+      .stat-card-title {
+        font-size: 0.8rem !important;
+      }
+      .stat-card-num {
+        font-size: 1.55rem !important;
+      }
+
+      /* Touch targets */
+      .btn, .form-control {
+        font-size: 0.88rem;
+      }
+      .btn-detail {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+      }
+
+      /* Responsive tables */
+      .table-teal-header thead th,
+      .table-teal-header tbody td {
+        padding: 8px 10px !important;
+        font-size: 0.82rem !important;
+      }
+
+      /* Select in Symptom Table */
+      .select-keyakinan {
+        min-width: 135px !important;
+        font-size: 0.78rem !important;
+        padding: 2px 6px !important;
+        height: 32px !important;
+      }
+
+      .btn-diagnosa-submit {
+        width: 100% !important;
+        font-size: 1rem !important;
+        padding: 12px !important;
+      }
+    }
   </style>
+
 </head>
 <body>
+  <!-- Mobile Sidebar Backdrop -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(event)"></div>
+
 
   <!-- Top Navbar (Teal Medis & Nama Baru: Dermascan Pakar) -->
   <header class="main-header">
@@ -469,6 +607,12 @@ Status: Aktif');"><i class="fas fa-id-badge mr-2 text-primary"></i> Detail Profi
     
     <!-- Sidebar Menu (Slate Dark) -->
     <aside class="sidebar" id="sidebarNav">
+      <!-- Mobile Close Header -->
+      <div class="sidebar-mobile-header">
+        <span class="font-weight-bold"><i class="fas fa-stethoscope mr-1"></i> Dermascan</span>
+        <button type="button" class="close-btn" onclick="toggleSidebar(event)">&times;</button>
+      </div>
+
       <ul class="sidebar-menu">
         <li class="<?= $page === 'dashboard' ? 'active' : '' ?>">
           <a href="?page=dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
@@ -509,7 +653,7 @@ Status: Aktif');"><i class="fas fa-id-badge mr-2 text-primary"></i> Detail Profi
           <i class="fas fa-tachometer-alt"></i> Dashboard Sistem Pakar
         </div>
         <div class="row">
-          <div class="col-md-3 mb-3">
+          <div class="col-6 col-md-3 mb-3">
             <div class="card text-white p-3 shadow-sm border-0" style="background-color: var(--primary-teal); border-radius: 8px;">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -520,7 +664,7 @@ Status: Aktif');"><i class="fas fa-id-badge mr-2 text-primary"></i> Detail Profi
               </div>
             </div>
           </div>
-          <div class="col-md-3 mb-3">
+          <div class="col-6 col-md-3 mb-3">
             <div class="card text-white p-3 shadow-sm border-0" style="background-color: #0284C7; border-radius: 8px;">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -531,7 +675,7 @@ Status: Aktif');"><i class="fas fa-id-badge mr-2 text-primary"></i> Detail Profi
               </div>
             </div>
           </div>
-          <div class="col-md-3 mb-3">
+          <div class="col-6 col-md-3 mb-3">
             <div class="card text-white p-3 shadow-sm border-0" style="background-color: #EAB308; border-radius: 8px;">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -866,7 +1010,7 @@ Status: Aktif');"><i class="fas fa-id-badge mr-2 text-primary"></i> Detail Profi
                           <label for="chk_<?= $g['id_gejala'] ?>" class="mb-0 cursor-pointer"><?= htmlspecialchars($g['nama_gejala']) ?></label>
                         </td>
                         <td>
-                          <select name="cf_user[<?= $g['id_gejala'] ?>]" id="cf_<?= $g['id_gejala'] ?>" class="form-control form-control-sm" disabled>
+                          <select name="cf_user[<?= $g['id_gejala'] ?>]" id="cf_<?= $g['id_gejala'] ?>" class="form-control form-control-sm select-keyakinan" disabled>
                             <option value="1.0">Sangat Yakin (1.0)</option>
                             <option value="0.8" selected>Yakin (0.8)</option>
                             <option value="0.6">Cukup Yakin (0.6)</option>
@@ -1265,12 +1409,26 @@ Status: Aktif');"><i class="fas fa-id-badge mr-2 text-primary"></i> Detail Profi
 
   <script>
     function toggleSidebar(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
       var sidebar = document.getElementById('sidebarNav');
-      if (sidebar.style.display === 'none') {
-        sidebar.style.display = 'block';
+      var backdrop = document.getElementById('sidebarBackdrop');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('open');
+        if (backdrop) {
+          backdrop.classList.toggle('show');
+        }
       } else {
-        sidebar.style.display = 'none';
+        sidebar.style.display = (sidebar.style.display === 'none') ? 'block' : 'none';
+      }
+    }
+
+    // Auto close sidebar on mobile when navigating
+    function closeSidebarMobile() {
+      if (window.innerWidth <= 768) {
+        var sidebar = document.getElementById('sidebarNav');
+        var backdrop = document.getElementById('sidebarBackdrop');
+        if (sidebar) sidebar.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('show');
       }
     }
 

@@ -6,8 +6,9 @@
 -- Entitas: 15 Penyakit (P01 - P15) dan 68 Gejala (G01 - G68)
 -- ====================================================================
 
-CREATE DATABASE IF NOT EXISTS `db_sistem_pakar_kulit` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `db_sistem_pakar_kulit`;
+-- Baris di bawah ini dikomentari agar kompatibel di hosting online (InfinityFree / cPanel):
+-- CREATE DATABASE IF NOT EXISTS `db_sistem_pakar_kulit` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE `db_sistem_pakar_kulit`;
 
 -- --------------------------------------------------------------------
 -- 1. Struktur Tabel `users`

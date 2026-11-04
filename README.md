@@ -133,3 +133,4 @@ Aplikasi ini telah disediakan dalam versi **`index.html` mandiri (Static App)** 
 
 ## 👨‍💻 Pengembang & Lisensi
 Dikembangkan untuk keperluan akademis mata kuliah **Sistem Pakar (Semester 5)** dengan standar arsitektur perangkat lunak berbasis kaidah inferensi kecerdasan buatan.
+

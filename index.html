@@ -4,304 +4,809 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dermascan Pakar - Sistem Pakar Diagnosa Penyakit Kulit</title>
-  <!-- Tailwind CSS & FontAwesome -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap 4 & FontAwesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Chart.js untuk Grafik Donut -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- PALET WARNA MEDIS MODERN (Teal & Clean Slate) -->
   <style>
     :root {
-      --primary-teal: #0D9488;
-      --primary-dark: #0F766E;
-      --secondary-slate: #475569;
-      --bg-mint: #F0FDF4;
-      --accent-coral: #F43F5E;
+      --primary-teal: #0D9488;      /* Teal Medis */
+      --primary-dark: #0F766E;      /* Teal Gelap untuk Brand */
+      --secondary-slate: #475569;   /* Slate Slate */
+      --bg-mint-soft: #F0FDF4;      /* Off-White / Mint Soft */
+      --accent-coral: #F43F5E;      /* Coral Merah Muda Alert */
+      --sidebar-dark: #1E293B;      /* Deep Slate Dark */
+      --sidebar-active: #0F172A;    /* Slate Tergelap */
     }
+
     body {
-      background-color: var(--bg-mint);
+      background-color: var(--bg-mint-soft);
+      color: #1E293B;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
     }
-    @media print {
-      .no-print { display: none !important; }
-      body { background: white; color: black; }
+
+    /* Top Navbar Teal Medis */
+    .main-header {
+      background-color: var(--primary-teal);
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px 0 0;
+      color: #fff;
+      box-shadow: 0 2px 4px rgba(13, 148, 136, 0.15);
+    }
+    .main-header .brand-logo {
+      background-color: var(--primary-dark);
+      width: 230px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      padding-left: 18px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.5px;
+      color: #fff;
+      text-decoration: none;
+    }
+    .main-header .brand-logo i {
+      margin-right: 8px;
+      font-size: 1.25rem;
+    }
+    .main-header .nav-left {
+      display: flex;
+      align-items: center;
+    }
+    .main-header .sidebar-toggle {
+      color: #fff;
+      padding: 0 15px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      text-decoration: none;
+    }
+    .user-badge {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .user-avatar {
+      background-color: var(--accent-coral);
+      color: #fff;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    /* Sidebar Dark Modern */
+    .wrapper-container {
+      display: flex;
+      min-height: calc(100vh - 52px);
+    }
+    .sidebar {
+      width: 230px;
+      background-color: var(--sidebar-dark);
+      flex-shrink: 0;
+      box-shadow: 2px 0 6px rgba(0,0,0,0.06);
+    }
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar-menu li a {
+      display: flex;
+      align-items: center;
+      padding: 12px 18px;
+      color: #94A3B8;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .sidebar-menu li a:hover, .sidebar-menu li.active a {
+      color: #fff;
+      background-color: var(--sidebar-active);
+      border-left-color: var(--primary-teal);
+    }
+    .sidebar-menu li a i {
+      width: 26px;
+      font-size: 0.95rem;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex-grow: 1;
+      padding: 22px 25px;
+      background-color: var(--bg-mint-soft);
+    }
+    .page-title {
+      color: var(--sidebar-dark);
+      font-size: 1.55rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .page-title i {
+      color: var(--primary-teal);
+      margin-right: 10px;
+    }
+
+    /* Table Teal Medis Header */
+    .table-teal-header thead th {
+      background-color: var(--primary-teal) !important;
+      color: #fff !important;
+      border: none !important;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 11px 14px;
+      vertical-align: middle;
+    }
+    .table-teal-header tbody td {
+      vertical-align: middle;
+      font-size: 0.88rem;
+      color: #334155;
+      padding: 11px 14px;
+      border-top: 1px solid #E2E8F0;
+      background-color: #fff;
+    }
+    .table-teal-header tbody tr:nth-of-type(even) td {
+      background-color: #F8FAFC;
+    }
+    .badge-cf {
+      background-color: #E2E8F0;
+      color: var(--secondary-slate);
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      display: inline-block;
+    }
+    .btn-detail {
+      background-color: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      color: var(--secondary-slate);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .btn-detail:hover {
+      background-color: var(--primary-teal);
+      border-color: var(--primary-teal);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    /* Card Box for Chart */
+    .box-chart {
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid #CBD5E1;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .box-chart-header {
+      background-color: var(--primary-teal);
+      color: #fff;
+      padding: 10px 16px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .box-chart-header .tools i {
+      margin-left: 8px;
+      cursor: pointer;
+      opacity: 0.9;
+    }
+    .box-chart-body {
+      padding: 18px 15px;
+    }
+    .pagination-custom .page-link {
+      color: var(--secondary-slate);
+      border: 1px solid #CBD5E1;
+      font-size: 0.85rem;
+      padding: 6px 14px;
+    }
+    .pagination-custom .page-item.active .page-link {
+      background-color: var(--primary-teal);
+      border-color: var(--primary-teal);
+      color: #fff;
+    }
+
+    /* Article Card Styles */
+    .card-article {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      transition: all 0.25s ease-in-out;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card-article:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(13, 148, 136, 0.1);
+      border-color: var(--primary-teal);
+    }
+    .badge-source {
+      background-color: #CCFBF1;
+      color: var(--primary-dark);
+      font-weight: 600;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .btn-visit {
+      background-color: var(--primary-teal);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .btn-visit:hover {
+      background-color: var(--primary-dark);
+      color: #fff;
+      text-decoration: none;
     }
   </style>
 </head>
-<body class="text-slate-800 font-sans min-h-screen py-8 px-4 sm:px-6">
+<body>
 
-  <div class="max-w-5xl mx-auto space-y-6">
-
-    <!-- Top Navigation / Header (Teal Medis) -->
-    <header class="bg-teal-700 text-white rounded-2xl shadow-md p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-      <div class="flex items-center space-x-3">
-        <div class="w-12 h-12 rounded-xl bg-teal-800 flex items-center justify-center text-2xl shadow">
-          <i class="fa-solid fa-stethoscope"></i>
-        </div>
-        <div>
-          <h1 class="text-2xl font-black tracking-tight">Dermascan Pakar</h1>
-          <p class="text-xs text-teal-100 font-medium">Sistem Pakar Diagnosa Penyakit Kulit (Forward Chaining & Certainty Factor)</p>
-        </div>
-      </div>
-      <div class="flex items-center space-x-2 text-xs font-semibold">
-        <button onclick="toggleArticles()" class="bg-teal-800 hover:bg-teal-900 border border-teal-600 px-4 py-2 rounded-xl transition flex items-center shadow-sm">
-          <i class="fa-solid fa-book-medical mr-1.5"></i> Data Artikel & Referensi
-        </button>
-      </div>
-    </header>
-
-    <!-- Modal / Section Data Artikel (Bisa dibuka/tutup) -->
-    <div id="articles-section" class="hidden bg-white border border-teal-200 rounded-2xl p-6 shadow-sm space-y-4">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-        <div>
-          <h3 class="text-lg font-bold text-teal-800 flex items-center">
-            <i class="fa-solid fa-book-medical mr-2 text-teal-600"></i> Data Artikel & Referensi Medis Resmi
-          </h3>
-          <p class="text-xs text-slate-500">Katalog literatur kedokteran resmi (CDC, NCBI StatPearls, DermNet NZ, AAD, dan JRAMI)</p>
-        </div>
-        <button onclick="toggleArticles()" class="text-slate-400 hover:text-slate-700 text-lg p-1">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs" id="articles-container">
-        <!-- Rendered by JS -->
-      </div>
+  <!-- Top Navbar (Teal Medis & Brand: Dermascan Pakar) -->
+  <header class="main-header">
+    <div class="nav-left">
+      <a href="javascript:navigate('dashboard')" class="brand-logo">
+        <i class="fas fa-stethoscope"></i> Dermascan Pakar
+      </a>
+      <a href="#" class="sidebar-toggle" onclick="toggleSidebar(event)">
+        <i class="fas fa-bars"></i>
+      </a>
     </div>
+    <div class="user-badge">
+      <span class="user-avatar">S</span>
+      <span>Admin</span>
+    </div>
+  </header>
 
-    <!-- Form Konsultasi & Gejala -->
-    <main class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
-      
-      <!-- 1. Biodata Pasien -->
-      <div>
-        <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-2 mb-4 flex items-center">
-          <span class="w-6 h-6 rounded-full bg-teal-600 text-white text-xs flex items-center justify-center mr-2">1</span> Data Pasien
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Pasien</label>
-            <input type="text" id="patient-name" value="Pasien" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+  <div class="wrapper-container">
+    
+    <!-- Sidebar Menu (Slate Dark) -->
+    <aside class="sidebar" id="sidebarNav">
+      <ul class="sidebar-menu">
+        <li id="menu-dashboard" class="active">
+          <a onclick="navigate('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        </li>
+        <li id="menu-diagnosa">
+          <a onclick="navigate('diagnosa')"><i class="fas fa-user-md"></i> Konsultasi</a>
+        </li>
+        <li id="menu-penyakit">
+          <a onclick="navigate('penyakit')"><i class="fas fa-bug"></i> Data Penyakit</a>
+        </li>
+        <li id="menu-gejala">
+          <a onclick="navigate('gejala')"><i class="fas fa-syringe"></i> Data Gejala</a>
+        </li>
+        <li id="menu-aturan">
+          <a onclick="navigate('aturan')"><i class="fas fa-sync-alt"></i> Data Aturan</a>
+        </li>
+        <li id="menu-artikel">
+          <a onclick="navigate('artikel')"><i class="fas fa-book-medical"></i> Data Artikel</a>
+        </li>
+        <li id="menu-riwayat">
+          <a onclick="navigate('riwayat')"><i class="far fa-clock"></i> Data Riwayat</a>
+        </li>
+        <li id="menu-user">
+          <a onclick="navigate('user')"><i class="fas fa-user"></i> Data User</a>
+        </li>
+        <li id="menu-password">
+          <a onclick="navigate('password')"><i class="fas fa-lock"></i> Ubah Password</a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Dynamic Views -->
+    <main class="content-area">
+
+      <!-- ==================== VIEW 1: DASHBOARD ==================== -->
+      <div id="view-dashboard">
+        <div class="page-title">
+          <i class="fas fa-tachometer-alt"></i> Dashboard Sistem Pakar
+        </div>
+        <div class="row">
+          <div class="col-md-3 mb-3">
+            <div class="card text-white p-3 shadow-sm border-0" style="background-color: var(--primary-teal); border-radius: 8px;">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h2 class="font-weight-bold mb-0">15</h2>
+                  <div class="small font-weight-semibold">Data Penyakit</div>
+                </div>
+                <i class="fas fa-bug fa-2x opacity-75"></i>
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Usia (Tahun)</label>
-            <input type="number" id="patient-age" value="23" min="1" max="100" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+          <div class="col-md-3 mb-3">
+            <div class="card text-white p-3 shadow-sm border-0" style="background-color: #0284C7; border-radius: 8px;">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h2 class="font-weight-bold mb-0">68</h2>
+                  <div class="small font-weight-semibold">Data Gejala</div>
+                </div>
+                <i class="fas fa-syringe fa-2x opacity-75"></i>
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Jenis Kelamin</label>
-            <select id="patient-gender" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
-              <option value="Laki-laki">Laki-laki</option>
-              <option value="Perempuan">Perempuan</option>
-            </select>
+          <div class="col-md-3 mb-3">
+            <div class="card text-white p-3 shadow-sm border-0" style="background-color: #EAB308; border-radius: 8px;">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h2 class="font-weight-bold mb-0">86</h2>
+                  <div class="small font-weight-semibold">Basis Aturan (Rules)</div>
+                </div>
+                <i class="fas fa-sync-alt fa-2x opacity-75"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="card text-white p-3 shadow-sm border-0" style="background-color: var(--accent-coral); border-radius: 8px;">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h2 class="font-weight-bold mb-0" id="dash-total-riwayat">5</h2>
+                  <div class="small font-weight-semibold">Riwayat Konsultasi</div>
+                </div>
+                <i class="far fa-clock fa-2x opacity-75"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4 text-center mt-3 bg-white" style="border-radius: 10px;">
+          <h4 class="font-weight-bold" style="color: var(--primary-teal);">Sistem Pakar Diagnosa Penyakit Kulit (Dermascan Pakar)</h4>
+          <p class="text-muted small">Aplikasi pendukung keputusan medis untuk skrining 15 penyakit kulit dengan metode Forward Chaining dan Certainty Factor.</p>
+          <div class="mt-2">
+            <button onclick="navigate('diagnosa')" class="btn text-white px-4 py-2 font-weight-bold shadow-sm" style="background-color: var(--primary-teal);">
+              <i class="fas fa-play mr-1"></i> Mulai Konsultasi Baru
+            </button>
+            <button onclick="navigate('riwayat')" class="btn btn-outline-secondary px-4 py-2 ml-2 font-weight-semibold">
+              <i class="far fa-chart-bar mr-1"></i> Lihat Data Riwayat & Grafik
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- 2. Pilihan Gejala (68 Gejala) -->
-      <div>
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-2 mb-3 gap-2">
-          <h2 class="text-lg font-bold text-slate-900 flex items-center">
-            <span class="w-6 h-6 rounded-full bg-teal-600 text-white text-xs flex items-center justify-center mr-2">2</span> Pilih Gejala yang Dialami
-          </h2>
-          <!-- Kolom Pencarian Cepat -->
-          <div class="relative w-full sm:w-64">
-            <input type="text" id="search-box" onkeyup="filterList()" placeholder="Cari gejala atau kode..." class="w-full text-xs border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+      <!-- ==================== VIEW 2: DATA RIWAYAT (PERSIS SCREENSHOT) ==================== -->
+      <div id="view-riwayat" style="display: none;">
+        <div class="page-title">
+          <i class="far fa-clock"></i> Data Riwayat
+        </div>
+
+        <div class="row">
+          <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 6px; overflow: hidden;">
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-teal-header mb-0">
+                    <thead>
+                      <tr>
+                        <th style="width: 50px;">No</th>
+                        <th style="width: 170px;">Tanggal</th>
+                        <th>Penyakit</th>
+                        <th style="width: 100px;">Nilai CF</th>
+                        <th style="width: 90px; text-align: center;">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="riwayat-table-body">
+                      <!-- Rendered by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-3">
+              <ul class="pagination pagination-custom">
+                <li class="page-item disabled"><a class="page-link" href="#">Back</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <p class="text-xs text-slate-500 mb-3">Centang gejala yang Anda rasakan, lalu pilih tingkat keyakinan kepastian Anda:</p>
-
-        <!-- Daftar Gejala List -->
-        <div id="symptoms-container" class="max-h-[440px] overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100 bg-slate-50/30">
-          <!-- Rendered by JavaScript -->
-        </div>
-
-        <div class="flex justify-between items-center text-xs text-slate-500 mt-3 pt-2">
-          <span>Gejala terpilih: <strong id="count-selected" class="text-teal-700 font-bold text-sm">0</strong> dari 68 gejala</span>
-          <button type="button" onclick="resetForm()" class="text-slate-500 hover:text-rose-600 font-medium underline">
-            <i class="fa-solid fa-rotate-left mr-1"></i> Reset Pilihan
-          </button>
+          <!-- Grafik Donut (Persis Screenshot) -->
+          <div class="col-lg-4">
+            <div class="box-chart">
+              <div class="box-chart-header">
+                <div><i class="fas fa-chart-pie mr-1"></i> Grafik</div>
+                <div class="tools">
+                  <i class="fas fa-minus"></i>
+                  <i class="fas fa-times"></i>
+                </div>
+              </div>
+              <div class="box-chart-body text-center">
+                <div style="position: relative; height: 210px; width: 100%;">
+                  <canvas id="grafikDonut"></canvas>
+                </div>
+                <div id="chartLegend" class="mt-3 text-left pl-3" style="font-size: 0.8rem;"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Tombol Hitung -->
-      <div class="text-center pt-2">
-        <button type="button" onclick="prosesDiagnosa()" class="w-full sm:w-auto px-10 py-3.5 bg-teal-600 hover:bg-teal-700 text-white text-base font-bold rounded-xl shadow-md hover:shadow-lg transition transform active:scale-95 flex items-center justify-center mx-auto">
-          <i class="fa-solid fa-calculator mr-2"></i> Hitung Diagnosa Penyakit
-        </button>
+      <!-- ==================== VIEW 3: KONSULTASI / DIAGNOSA ==================== -->
+      <div id="view-diagnosa" style="display: none;">
+        <div class="page-title">
+          <i class="fas fa-user-md"></i> Konsultasi Diagnosa Penyakit Kulit
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: 8px;">
+          <div class="card-body p-4">
+            <h5 class="font-weight-bold mb-3 border-bottom pb-2" style="color: var(--primary-teal);">1. Data Pasien</h5>
+            <div class="form-row mb-4">
+              <div class="col-md-5">
+                <label class="font-weight-semibold small">Nama Pasien</label>
+                <input type="text" id="diag-name" class="form-control form-control-sm" value="Pasien Konsultasi" required>
+              </div>
+              <div class="col-md-3">
+                <label class="font-weight-semibold small">Usia (Tahun)</label>
+                <input type="number" id="diag-age" class="form-control form-control-sm" value="23" min="1" max="100" required>
+              </div>
+              <div class="col-md-4">
+                <label class="font-weight-semibold small">Jenis Kelamin</label>
+                <select id="diag-gender" class="form-control form-control-sm">
+                  <option value="Laki-laki">Laki-laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
+              </div>
+            </div>
+
+            <h5 class="font-weight-bold mb-3 border-bottom pb-2" style="color: var(--primary-teal);">2. Pilih Gejala yang Dialami (68 Gejala)</h5>
+            <p class="text-muted small mb-3">Centang gejala yang dirasakan lalu tentukan nilai keyakinan Anda:</p>
+
+            <div class="table-responsive border rounded" style="max-height: 480px; overflow-y: auto; background: #fff;">
+              <table class="table table-sm table-hover mb-0">
+                <thead class="sticky-top" style="background-color: #F1F5F9;">
+                  <tr>
+                    <th class="text-center" style="width: 50px;">Pilih</th>
+                    <th style="width: 80px;">Kode</th>
+                    <th>Nama Gejala</th>
+                    <th style="width: 200px;">Tingkat Keyakinan</th>
+                  </tr>
+                </thead>
+                <tbody id="symptoms-table-body">
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-4 text-center">
+              <button onclick="hitungDiagnosa()" class="btn text-white px-5 py-2 font-weight-bold shadow-sm" style="background-color: var(--primary-teal);">
+                <i class="fas fa-calculator mr-2"></i> Proses Diagnosa Sekarang
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 4: HASIL DIAGNOSA ==================== -->
+      <div id="view-hasil" style="display: none;">
+        <div class="page-title">
+          <i class="fas fa-clipboard-check"></i> Hasil Diagnosa Pasien
+        </div>
+
+        <div class="card shadow-sm mb-4" style="border: 1px solid var(--primary-teal); border-radius: 8px;">
+          <div class="card-header text-white font-weight-bold" style="background-color: var(--primary-teal);">
+            Diagnosis Utama: <span id="res-disease-header">-</span>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <h3 class="font-weight-bold text-dark" id="res-disease-title">-</h3>
+                <span class="badge badge-info p-2 mb-2" id="res-category">-</span>
+                <p class="text-muted" id="res-desc">-</p>
+                <div class="alert alert-light border p-3" style="border-color: var(--primary-teal) !important;">
+                  <strong style="color: var(--primary-teal);">Pengobatan / Solusi:</strong><br>
+                  <span id="res-solution">-</span>
+                  <hr>
+                  <strong style="color: var(--primary-teal);">Pencegahan:</strong><br>
+                  <span id="res-prevention">-</span>
+                </div>
+              </div>
+              <div class="col-md-4 text-center">
+                <div class="p-3 bg-light rounded border" style="border-color: var(--primary-teal) !important;">
+                  <span class="text-muted small text-uppercase font-weight-bold">Tingkat Keyakinan</span>
+                  <h1 class="display-4 font-weight-bold my-2" style="color: var(--primary-teal);" id="res-percentage">0%</h1>
+                  <span class="badge-cf" id="res-cf-val">CF: 0.0000</span>
+                </div>
+              </div>
+            </div>
+
+            <h6 class="font-weight-bold mt-4 mb-2">Gejala Pendukung yang Ditemukan:</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered">
+                <thead class="bg-light">
+                  <tr>
+                    <th>Kode</th>
+                    <th>Nama Gejala</th>
+                    <th class="text-center">CF Pasien</th>
+                    <th class="text-center">CF Pakar</th>
+                    <th class="text-center">CF Gejala</th>
+                  </tr>
+                </thead>
+                <tbody id="res-matched-body">
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-4">
+              <button onclick="navigate('riwayat')" class="btn btn-outline-secondary mr-2"><i class="fas fa-arrow-left"></i> Lihat Riwayat</button>
+              <button onclick="navigate('diagnosa')" class="btn text-white" style="background-color: var(--primary-teal);"><i class="fas fa-redo"></i> Diagnosa Ulang</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 5: DATA PENYAKIT ==================== -->
+      <div id="view-penyakit" style="display: none;">
+        <div class="page-title">
+          <i class="fas fa-bug"></i> Data Penyakit Kulit (15 Penyakit)
+        </div>
+        <div class="card border-0 shadow-sm" style="border-radius: 6px; overflow: hidden;">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-teal-header mb-0">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">No</th>
+                    <th style="width: 80px;">Kode</th>
+                    <th>Nama Penyakit</th>
+                    <th style="width: 140px;">Kategori</th>
+                    <th style="width: 120px;">Keparahan</th>
+                    <th>Pengobatan / Solusi</th>
+                  </tr>
+                </thead>
+                <tbody id="penyakit-table-body">
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 6: DATA GEJALA ==================== -->
+      <div id="view-gejala" style="display: none;">
+        <div class="page-title">
+          <i class="fas fa-syringe"></i> Data Gejala (68 Gejala)
+        </div>
+        <div class="card border-0 shadow-sm" style="border-radius: 6px; overflow: hidden;">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-teal-header mb-0">
+                <thead>
+                  <tr>
+                    <th style="width: 60px;">No</th>
+                    <th style="width: 100px;">Kode Gejala</th>
+                    <th>Deskripsi Gejala</th>
+                  </tr>
+                </thead>
+                <tbody id="gejala-table-body">
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 7: DATA ATURAN ==================== -->
+      <div id="view-aturan" style="display: none;">
+        <div class="page-title">
+          <i class="fas fa-sync-alt"></i> Data Aturan (Rule & CF Pakar)
+        </div>
+        <div class="card border-0 shadow-sm" style="border-radius: 6px; overflow: hidden;">
+          <div class="card-body p-0">
+            <div class="table-responsive" style="max-height: 550px; overflow-y: auto;">
+              <table class="table table-teal-header mb-0">
+                <thead class="sticky-top">
+                  <tr>
+                    <th style="width: 50px;">No</th>
+                    <th style="width: 80px;">Basis</th>
+                    <th>Penyakit</th>
+                    <th>Gejala Terkait</th>
+                    <th style="width: 120px; text-align: center;">CF Pakar</th>
+                  </tr>
+                </thead>
+                <tbody id="aturan-table-body">
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 8: DATA ARTIKEL ==================== -->
+      <div id="view-artikel" style="display: none;">
+        <div class="page-title">
+          <i class="fas fa-book-medical"></i> Data Artikel & Referensi Medis Penyakit Kulit
+        </div>
+        <p class="text-muted small mb-4">
+          Daftar literatur ilmiah, jurnal kedokteran, dan referensi resmi terpercaya (CDC, StatPearls NCBI, DermNet NZ, AAD, dan JRAMI) yang mendasari basis pengetahuan Dermascan Pakar.
+        </p>
+
+        <div class="row" id="artikel-container">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 9: DATA USER ==================== -->
+      <div id="view-user" style="display: none;">
+        <div class="page-title">
+          <i class="fas fa-user"></i> Data Pengguna Sistem
+        </div>
+        <div class="card border-0 shadow-sm p-4">
+          <table class="table table-sm table-bordered">
+            <thead class="bg-light">
+              <tr>
+                <th>No</th>
+                <th>Nama Lengkap</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Administrator Klinik</td>
+                <td>admin</td>
+                <td><span class="badge badge-success">Admin</span></td>
+                <td><span class="badge badge-primary">Aktif</span></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Pasien Konsultasi</td>
+                <td>pasien</td>
+                <td><span class="badge badge-secondary">User</span></td>
+                <td><span class="badge badge-primary">Aktif</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 10: UBAH PASSWORD ==================== -->
+      <div id="view-password" style="display: none;">
+        <div class="page-title">
+          <i class="fas fa-lock"></i> Ubah Password
+        </div>
+        <div class="card border-0 shadow-sm p-4" style="max-width: 500px;">
+          <div class="form-group">
+            <label class="small font-weight-bold">Password Lama</label>
+            <input type="password" class="form-control form-control-sm" placeholder="Masukkan password lama...">
+          </div>
+          <div class="form-group">
+            <label class="small font-weight-bold">Password Baru</label>
+            <input type="password" class="form-control form-control-sm" placeholder="Masukkan password baru...">
+          </div>
+          <button class="btn text-white btn-sm px-4" style="background-color: var(--primary-teal);">Simpan Perubahan</button>
+        </div>
       </div>
 
     </main>
-
-    <!-- 3. Kotak Hasil Diagnosis -->
-    <section id="result-box" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
-      
-      <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
-        <div>
-          <h2 class="text-xl font-bold text-teal-800">Hasil Diagnosis Pasien</h2>
-          <p class="text-xs text-slate-500" id="result-patient-info">-</p>
-        </div>
-        <button onclick="window.print()" class="no-print text-xs bg-slate-800 hover:bg-slate-700 text-white px-3.5 py-2 rounded-lg transition font-medium shadow-sm flex items-center">
-          <i class="fa-solid fa-print mr-1.5"></i> Cetak / PDF
-        </button>
-      </div>
-
-      <!-- Kartu Hasil Utama -->
-      <div class="bg-gradient-to-br from-teal-50 to-emerald-50 border border-teal-200 rounded-2xl p-6 space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <span class="text-[11px] uppercase font-bold text-teal-700 bg-teal-200/60 px-2.5 py-1 rounded-md tracking-wider">
-              Diagnosis Utama Teridentifikasi
-            </span>
-            <h3 id="res-disease" class="text-3xl font-black text-slate-900 mt-2">-</h3>
-            <span id="res-category" class="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-700 mt-1 shadow-sm">-</span>
-          </div>
-          <div class="bg-white p-4 rounded-xl border border-teal-200 shadow-sm text-center min-w-[170px]">
-            <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Tingkat Keyakinan</span>
-            <div id="res-percentage" class="text-4xl font-black text-teal-600 my-1">0%</div>
-            <div id="res-cf" class="text-xs text-slate-500 font-mono">CF: 0.0000</div>
-          </div>
-        </div>
-        <p id="res-desc" class="text-xs sm:text-sm text-slate-700 leading-relaxed pt-2 border-t border-teal-200/50">-</p>
-      </div>
-
-      <!-- Solusi & Pencegahan -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
-        <div class="p-5 rounded-xl bg-blue-50/70 border border-blue-200">
-          <strong class="text-blue-900 font-bold block mb-1.5 flex items-center">
-            <i class="fa-solid fa-hand-holding-medical mr-2 text-blue-600"></i> Pengobatan / Solusi:
-          </strong>
-          <p id="res-solution" class="text-slate-700 leading-relaxed">-</p>
-        </div>
-        <div class="p-5 rounded-xl bg-emerald-50/70 border border-emerald-200">
-          <strong class="text-emerald-900 font-bold block mb-1.5 flex items-center">
-            <i class="fa-solid fa-shield-halved mr-2 text-emerald-600"></i> Pencegahan:
-          </strong>
-          <p id="res-prevention" class="text-slate-700 leading-relaxed">-</p>
-        </div>
-      </div>
-
-      <!-- Rincian Gejala Pendukung -->
-      <div>
-        <h4 class="font-bold text-sm text-slate-900 mb-2.5 flex items-center">
-          <i class="fa-solid fa-clipboard-check mr-2 text-teal-600"></i> Gejala Pendukung yang Ditemukan:
-        </h4>
-        <div class="overflow-x-auto border border-slate-200 rounded-xl">
-          <table class="min-w-full text-xs text-left">
-            <thead class="bg-slate-100 text-slate-600 uppercase font-semibold">
-              <tr>
-                <th class="py-2.5 px-3">Kode</th>
-                <th class="py-2.5 px-3">Nama Gejala</th>
-                <th class="py-2.5 px-3 text-center">CF Pasien</th>
-                <th class="py-2.5 px-3 text-center">CF Pakar</th>
-                <th class="py-2.5 px-3 text-center">CF Gejala</th>
-              </tr>
-            </thead>
-            <tbody id="res-symptoms-table" class="divide-y divide-slate-100 bg-white">
-              <!-- Rendered by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Ranking Alternatif -->
-      <div>
-        <h4 class="font-bold text-sm text-slate-900 mb-2.5 flex items-center">
-          <i class="fa-solid fa-ranking-star mr-2 text-amber-500"></i> Kemungkinan Diagnosis Penyakit Lainnya:
-        </h4>
-        <div class="overflow-x-auto border border-slate-200 rounded-xl">
-          <table class="min-w-full text-xs text-left">
-            <thead class="bg-slate-100 text-slate-600 uppercase font-semibold">
-              <tr>
-                <th class="py-2.5 px-3 text-center">Rank</th>
-                <th class="py-2.5 px-3">Kode & Penyakit</th>
-                <th class="py-2.5 px-3 text-center">Kategori</th>
-                <th class="py-2.5 px-3 text-center">Nilai CF</th>
-                <th class="py-2.5 px-3 text-center">Persentase</th>
-              </tr>
-            </thead>
-            <tbody id="res-ranking-table" class="divide-y divide-slate-100 bg-white">
-              <!-- Rendered by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Tombol Ulangi -->
-      <div class="text-center pt-2 no-print">
-        <button onclick="resetForm()" class="text-sm font-semibold text-teal-600 hover:text-teal-800 underline">
-          &larr; Lakukan Diagnosa Ulang
-        </button>
-      </div>
-
-    </section>
-
-    <!-- Footer -->
-    <footer class="text-center text-xs text-slate-400 py-3 no-print">
-      Dermascan Pakar • Sistem Pakar Diagnosa Penyakit Kulit (Metode Forward Chaining & Certainty Factor)
-    </footer>
-
   </div>
 
-  <!-- SCRIPT ENGINE SISTEM PAKAR & ARTIKEL -->
+  <!-- Modal Detail Riwayat Pasien -->
+  <div class="modal fade" id="modalDetail" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-white" style="background-color: var(--primary-teal);">
+          <h6 class="modal-title font-weight-bold"><i class="fas fa-info-circle mr-1"></i> Detail Konsultasi Pasien</h6>
+          <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+        </div>
+        <div class="modal-body small">
+          <p><strong>Nama Pasien:</strong> <span id="mNama">-</span></p>
+          <p><strong>Tanggal Konsultasi:</strong> <span id="mTgl">-</span></p>
+          <p><strong>Hasil Diagnosis:</strong> <span id="mPenyakit" class="font-weight-bold" style="color: var(--primary-teal);">-</span></p>
+          <p><strong>Nilai CF & Persentase:</strong> <span id="mPersen" class="badge badge-success">-</span></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- DATA & ENGINE JAVASCRIPT (SAMA PERSIS DENGAN INDEX.PHP) -->
   <script>
     const diseases = {
-      'P01': { name: 'Dermatitis Atopik / Eksim', category: 'Tidak Menular',
-               desc: 'Peradangan kulit kronis kambuhan yang disertai gatal intens dan riwayat alergi.',
-               sol: 'Oleskan pelembap emolien rutin, gunakan salep kortikosteroid topikal sesuai anjuran dokter.',
-               prev: 'Hindari pemicu alergi (debu, bulu hewan, cuaca dingin/panas), jangan menggaruk kulit.' },
-      'P02': { name: 'Tinea / Kurap', category: 'Menular',
-               desc: 'Infeksi jamur dermatofita yang membentuk bercak cincin tepi aktif dan bersisik.',
-               sol: 'Gunakan salep/krim antijamur (Mikonazol/Klotrimazol) 2-4 minggu secara teratur.',
-               prev: 'Jaga kulit tetap kering dan bersih, jangan saling bertukar handuk atau pakaian.' },
-      'P03': { name: 'Dermatitis Seboroik', category: 'Tidak Menular',
-               desc: 'Peradangan kulit berminyak dengan sisik berwarna kekuningan dan berketombe.',
-               sol: 'Gunakan sampo obat ketokonazol atau selenium sulfida, gunakan krim antiinflamasi ringan.',
-               prev: 'Keramas secara teratur dan hindari penggunaan minyak rambut berlebihan.' },
-      'P04': { name: 'Prurigo', category: 'Tidak Menular',
-               desc: 'Bintil-bintil gatal kronis yang diperparah oleh kebiasaan menggaruk terus-menerus.',
-               sol: 'Gunakan salep kortikosteroid potensi kuat dan obat antihistamin pereda gatal.',
-               prev: 'Potong kuku hingga pendek, hindari gigitan serangga, dan cegah garukan.' },
-      'P05': { name: 'Impetigo Krustosa', category: 'Menular',
-               desc: 'Infeksi bakteri kulit yang membentuk kerak kuning kecokelatan kental seperti madu.',
-               sol: 'Kompres lembut kerak dengan air hangat lalu oleskan salep antibiotik (Mupirosin).',
-               prev: 'Jaga kebersihan diri, cuci tangan dengan sabun, dan pisahkan handuk penderita.' },
-      'P06': { name: 'Herpes Zoster', category: 'Menular',
-               desc: 'Reaktivasi virus cacar air yang menimbulkan lenting sepihak disertai rasa panas terbakar.',
-               sol: 'Minum obat antivirus (Asiklovir) dalam 72 jam pertama dan obat pereda nyeri.',
-               prev: 'Jaga lenting tetap bersih, jangan dipecahkan, dan istirahat yang cukup.' },
-      'P07': { name: 'Urtikaria / Biduran', category: 'Tidak Menular',
-               desc: 'Reaksi alergi berupa bentol kemerahan yang gatal dan hilang timbul dengan cepat.',
-               sol: 'Minum obat antihistamin dan kompres dingin pada area kulit yang bentol.',
-               prev: 'Hindari faktor pencetus alergi (makanan laut, udara dingin, atau stres).' },
-      'P08': { name: 'Skabies / Kudis', category: 'Menular',
-               desc: 'Infestasi tungau parasit yang sangat gatal di malam hari pada sela jari dan lipatan.',
-               sol: 'Oleskan krim Permetrin 5% dari leher ke bawah selama 8-12 jam, bilas bersih.',
-               prev: 'Obati seluruh anggota keluarga/asrama secara serentak dan cuci pakaian dengan air panas.' },
-      'P09': { name: 'Psoriasis', category: 'Tidak Menular',
-               desc: 'Gangguan autoimun kronis yang menimbulkan plak kemerahan dengan sisik tebal mika.',
-               sol: 'Oleskan salep kortikosteroid, analog vitamin D, atau asam salisilat.',
-               prev: 'Hindari stres pikiran, jangan menggaruk hingga luka (fenomena Koebner).' },
-      'P10': { name: 'Varisela / Cacar Air', category: 'Menular',
-               desc: 'Infeksi primer virus cacar yang menimbulkan bintik berair menyebar seluruh tubuh.',
-               sol: 'Istirahat total, minum penurun demam, dan oleskan losion kalamin pereda gatal.',
-               prev: 'Isolasi mandiri sampai semua lepuhan kering dan lakukan vaksinasi cacar air.' },
-      'P11': { name: 'Acne Vulgaris (Jerawat)', category: 'Tidak Menular',
-               desc: 'Penyumbatan dan radang pori kulit yang menimbulkan komedo, papul merah, dan pustul nanah.',
-               sol: 'Gunakan sabun asam salisilat/benzoil peroksida dan obat jerawat topikal.',
-               prev: 'Cuci muka teratur 2x sehari, jangan memencet jerawat, gunakan produk non-comedogenic.' },
-      'P12': { name: 'Vitiligo (Bercak Putih)', category: 'Tidak Menular',
-               desc: 'Bercak putih susu akibat hilangnya pigmen kulit (melanin) secara berbatas tegas.',
-               sol: 'Krim kortikosteroid topikal atau terapi sinar ultraviolet (fototerapi).',
-               prev: 'Gunakan tabir surya SPF 30+ untuk melindungi area bercak putih dari sengatan matahari.' },
-      'P13': { name: 'Cellulitis (Selulitis)', category: 'Menular',
-               desc: 'Infeksi bakteri akut pada kulit dalam yang menyebabkan bengkak, merah luas, dan nyeri.',
-               sol: 'Pengobatan antibiotik segera dari dokter dan tinggikan posisi area yang bengkak.',
-               prev: 'Segera rawat dan bersihkan luka gores/gigitan serangga dengan antiseptik.' },
-      'P14': { name: 'Bisul (Furunkel)', category: 'Menular',
-               desc: 'Infeksi bakteri pada folikel rambut yang membentuk benjolan merah keras bernanah.',
-               sol: 'Kompres air hangat 3-4 kali sehari agar nanah keluar alami, jangan dipencet paksa.',
-               prev: 'Mandi bersih dengan sabun antibakteri dan jangan berbagi handuk dengan orang lain.' },
-      'P15': { name: 'Keloid', category: 'Tidak Menular',
-               desc: 'Pertumbuhan jaringan parut tebal yang melebihi batas luka awal dan tidak mengecil sendiri.',
-               sol: 'Suntik kortikosteroid intralesi, lembaran gel silikon penekan, atau terapi laser.',
-               prev: 'Hindari tindik, tato, atau luka kulit yang tidak perlu bila memiliki bakat keloid.' }
+      'P01': { code: 'P01', name: 'Dermatitis Atopik / Eksim', category: 'Tidak Menular', severity: 'Sedang',
+               desc: 'Peradangan kulit kronis kambuhan yang disertai rasa gatal intens dan riwayat atopik/alergi dalam keluarga.',
+               sol: 'Oleskan pelembap emolien tebal secara rutin, hindari sabun berbahan keras, dan gunakan salep kortikosteroid topikal sesuai anjuran dokter.',
+               prev: 'Hindari pemicu alergi (debu, bulu binatang, suhu ekstrem), jangan menggaruk kulit, dan gunakan pakaian longgar berbahan katun.' },
+      'P02': { code: 'P02', name: 'Tinea / Kurap', category: 'Menular', severity: 'Ringan',
+               desc: 'Infeksi jamur dermatofita pada kulit yang ditandai dengan bercak kemerahan berbentuk cincin tepi meninggi aktif dan bagian tengah menyembuh.',
+               sol: 'Gunakan krim antijamur topikal (seperti Mikonazol, Klotrimazol, atau Terbinafin) secara teratur selama 2-4 minggu.',
+               prev: 'Jaga kulit tetap bersih dan kering, segera ganti pakaian basah/berkeringat, serta jangan bertukar handuk dan pakaian pribadi.' },
+      'P03': { code: 'P03', name: 'Dermatitis Seboroik', category: 'Tidak Menular', severity: 'Ringan',
+               desc: 'Peradangan kulit pada area yang kaya kelenjar sebasea (kulit kepala, alis, dada atas) yang ditandai sisik berwarna kuning berminyak dan ketombe.',
+               sol: 'Gunakan sampo obat berbahan ketokonazol, selenium sulfida, atau zinc pyrithione. Gunakan krim antiinflamasi ringan pada wajah.',
+               prev: 'Cuci kulit kepala secara teratur, hindari produk rambut berminyak berlebih, dan kelola stres fisik maupun psikis.' },
+      'P04': { code: 'P04', name: 'Prurigo', category: 'Tidak Menular', severity: 'Sedang',
+               desc: 'Kelainan kulit kronis berupa bintil-bintil (nodul) sangat gatal yang diperparah oleh kebiasaan menggaruk terus-menerus hingga luka berdarah.',
+               sol: 'Oleskan salep kortikosteroid potensi tinggi, gunakan obat antihistamin oral pereda gatal, dan tutup lesi dengan perban agar tidak digaruk.',
+               prev: 'Gunting kuku hingga pendek, hindari gigitan serangga dengan losion penolak nyamuk, dan kendalikan kecemasan.' },
+      'P05': { code: 'P05', name: 'Impetigo Krustosa', category: 'Menular', severity: 'Sedang',
+               desc: 'Infeksi bakteri piogenik superfisial pada kulit (sering di wajah/sekitar hidung) yang ditandai bercak kerak kuning kecokelatan seperti madu.',
+               sol: 'Kompres lembut kerak dengan air hangat agar terlepas perlahan, lalu oleskan salep antibiotik seperti Mupirosin atau Asam Fusidat.',
+               prev: 'Jaga kebersihan diri, cuci tangan dengan sabun antiseptik, serta pisahkan handuk dan seprai penderita dari orang lain.' },
+      'P06': { code: 'P06', name: 'Herpes Zoster', category: 'Menular', severity: 'Sedang',
+               desc: 'Penyakit akibat reaktivasi virus Varicella Zoster yang menimbulkan vesikel/lenting cairan bergerombol pada satu sisi tubuh disertai nyeri terbakar.',
+               sol: 'Konsumsi obat antivirus oral (seperti Asiklovir atau Valasiklovir) dalam 72 jam pertama sejak lenting muncul, serta analgesik pereda nyeri.',
+               prev: 'Jaga vesikel tetap bersih dan kering, hindari memecahkan lenting, dan istirahat total untuk memulihkan daya tahan tubuh.' },
+      'P07': { code: 'P07', name: 'Urtikaria / Biduran', category: 'Tidak Menular', severity: 'Ringan',
+               desc: 'Reaksi vaskular kulit yang ditandai dengan bentol pucat hingga kemerahan timbul mendadak dan dapat hilang dalam beberapa jam atau hari.',
+               sol: 'Konsumsi obat antihistamin sesuai dosis dokter, kompres dingin pada area bentol, dan hindari paparan udara panas.',
+               prev: 'Catat dan hindari alergen pemicu (makanan laut, kacang, obat tertentu, suhu dingin, atau stres emosional).' },
+      'P08': { code: 'P08', name: 'Skabies / Kudis', category: 'Menular', severity: 'Sedang',
+               desc: 'Infestasi tungau parasit Sarcoptes scabiei yang menyebabkan gatal luar biasa pada malam hari di sela jari, lipatan perut, dan kemaluan.',
+               sol: 'Oleskan krim Permetrin 5% ke seluruh tubuh dari leher ke bawah, biarkan 8-12 jam, bilas bersih. Ulangi 1 minggu kemudian bila perlu.',
+               prev: 'Obati seluruh anggota keluarga serumah secara serempak, rendam semua pakaian dan seprai dalam air panas minimal 60 derajat C.' },
+      'P09': { code: 'P09', name: 'Psoriasis', category: 'Tidak Menular', severity: 'Sedang',
+               desc: 'Penyakit autoimun kronis yang mempercepat proliferasi sel kulit sehingga menimbulkan plak merah dengan lapisan sisik tebal seperti mika.',
+               sol: 'Oleskan salep kortikosteroid, analog vitamin D, atau pelembap berbahan asam salisilat. Fototerapi dapat dilakukan pada kasus luas.',
+               prev: 'Hindari cedera atau goresan pada kulit, kendalikan stres pikiran, hindari rokok dan alkohol yang dapat memicu kekambuhan.' },
+      'P10': { code: 'P10', name: 'Varisela / Cacar Air', category: 'Menular', severity: 'Sedang',
+               desc: 'Infeksi virus Varicella Zoster yang sangat menular, ditandai bintik berair menyebar ke seluruh tubuh disertai demam dan lemas.',
+               sol: 'Istirahat tirah baring, konsumsi penurun demam (Parasetamol), oleskan losion kalamin untuk meredakan gatal, dan penuhi asupan cairan.',
+               prev: 'Lakukan isolasi mandiri hingga seluruh lepuhan mengering menjadi keropeng, dan dapatkan imunisasi vaksin varisela.' },
+      'P11': { code: 'P11', name: 'Acne Vulgaris (Jerawat)', category: 'Tidak Menular', severity: 'Ringan',
+               desc: 'Peradangan kronis pada folikel pilosebasea yang ditandai dengan komedo, benjolan merah (papula), bintil bernanah (pustula), dan nodul nyeri.',
+               sol: 'Gunakan pembersih wajah asam salisilat atau benzoil peroksida, serta oleskan retinoid topikal sesuai petunjuk dokter.',
+               prev: 'Bersihkan wajah teratur 2 kali sehari, gunakan produk non-comedogenic, jangan memencet jerawat, dan kurangi makanan manis.' },
+      'P12': { code: 'P12', name: 'Vitiligo (Bercak Putih)', category: 'Tidak Menular', severity: 'Sedang',
+               desc: 'Kelainan kulit jangka panjang di mana melanosit rusak sehingga kehilangan pigmen kulit, menimbulkan bercak putih susu berbatas tegas.',
+               sol: 'Terapi topikal kortikosteroid potensi kuat, salep inhibitor kalsineurin, serta terapi sinar ultraviolet (fototerapi UVB pita sempit).',
+               prev: 'Gunakan tabir surya SPF 30+ berspektrum luas untuk melindungi area putih dari sengatan matahari dan hindari trauma fisik kulit.' },
+      'P13': { code: 'P13', name: 'Cellulitis (Selulitis)', category: 'Menular', severity: 'Berat',
+               desc: 'Infeksi bakteri akut pada lapisan dermis dan jaringan subkutan yang menyebabkan kemerahan luas, bengkak, teraba panas, dan nyeri berdenyut.',
+               sol: 'Pemberian antibiotik oral atau infus intravena secara cepat dan tuntas dari dokter, serta meninggikan posisi kaki/tangan yang bengkak.',
+               prev: 'Rawat dan bersihkan luka goresan atau gigitan serangga sekecil apa pun dengan cairan antiseptik, dan obati kutu air.' },
+      'P14': { code: 'P14', name: 'Bisul (Furunkel)', category: 'Menular', severity: 'Sedang',
+               desc: 'Infeksi bakteri Staphylococcus aureus yang menimbulkan benjolan merah keras bernanah dan sangat nyeri berdenyut di sekitar akar rambut.',
+               sol: 'Kompres hangat 3-4 kali sehari selama 15 menit untuk mempermudah drainase nanah. Oleskan salep antibiotik topikal.',
+               prev: 'Mandi teratur menggunakan sabun antibakteri, jangan memencet bisul secara paksa, dan jangan berbagi pakaian/handuk pribadi.' },
+      'P15': { code: 'P15', name: 'Keloid', category: 'Tidak Menular', severity: 'Ringan',
+               desc: 'Pertumbuhan jaringan parut fibrosa tebal yang menonjol di atas permukaan kulit dan meluas melampaui batas luka asli.',
+               sol: 'Penyuntikan kortikosteroid intralesi (Triamsinolon), penggunaan lembaran gel silikon penekan, bedah beku (krioterapi), atau laser.',
+               prev: 'Hindari tindakan invasif yang tidak esensial seperti tindik telinga, tato, atau operasi kosmetik jika memiliki riwayat bakat keloid.' }
     };
 
     const symptoms = [
@@ -393,166 +898,290 @@
       'P15': { 'G01': 0.6, 'G65': 1.0, 'G66': 1.0, 'G67': 0.8, 'G68': 0.8 }
     };
 
+    let riwayatData = [
+      { id: 1, tanggal: '2026-10-29 12:50:40', nama: 'Ahmad Fauzi', penyakit: 'Acne Vulgaris (Jerawat)', cf: 0.9850, persen: '98.50%' },
+      { id: 2, tanggal: '2026-10-29 12:51:51', nama: 'Siti Nurhaliza', penyakit: 'Vitiligo (Bercak Putih)', cf: 0.9200, persen: '92.00%' },
+      { id: 3, tanggal: '2026-10-29 12:52:20', nama: 'Budi Santoso', penyakit: 'Cellulitis (Selulitis)', cf: 0.9600, persen: '96.00%' },
+      { id: 4, tanggal: '2026-10-29 12:57:36', nama: 'Rian Hidayat', penyakit: 'Bisul (Furunkel)', cf: 0.8000, persen: '80.00%' },
+      { id: 5, tanggal: '2026-10-29 14:06:53', nama: 'Dewi Lestari', penyakit: 'Keloid', cf: 0.8500, persen: '85.00%' }
+    ];
+
     const medicalArticles = [
       {
         title: 'Sistem Pakar Diagnosa Penyakit Kulit Menggunakan Metode Forward Chaining dan Certainty Factor',
         source: 'JRAMI (Jurnal Riset dan Aplikasi Mahasiswa Informatika, 2026)',
         badge: 'Jurnal Utama',
+        disease: 'Acuan Penelitian',
         url: 'https://journal.lppmunindra.ac.id/index.php/jrami/'
       },
       {
         title: 'Clinical Guidance for Cellulitis (Diagnosis and Management)',
         source: 'CDC (Centers for Disease Control and Prevention)',
         badge: 'CDC Official',
+        disease: 'Cellulitis (Selulitis)',
         url: 'https://www.cdc.gov/group-a-strep/hcp/clinical-guidance/cellulitis.html'
       },
       {
         title: 'Vitiligo: Clinical Presentation, Pathophysiology, and Features',
         source: 'DermNet New Zealand Dermatology Resource',
         badge: 'DermNet NZ',
+        disease: 'Vitiligo (Bercak Putih)',
         url: 'https://dermnetnz.org/topics/vitiligo'
       },
       {
         title: 'Acne Vulgaris: Guidelines of Care for the Management of Acne',
         source: 'American Academy of Dermatology (AAD)',
         badge: 'AAD Guidelines',
+        disease: 'Acne Vulgaris (Jerawat)',
         url: 'https://www.aad.org/member/clinical-quality/guidelines/acne'
       },
       {
         title: 'Furuncle (Boil) and Carbuncle: Pathology and Clinical Practice',
         source: 'NCBI Bookshelf / StatPearls (NBK513141)',
         badge: 'NCBI StatPearls',
+        disease: 'Bisul (Furunkel)',
         url: 'https://www.ncbi.nlm.nih.gov/books/NBK513141/'
       },
       {
         title: 'Keloid and Hypertrophic Scar: Etiology, Risk Factors, and Therapy',
         source: 'NCBI Bookshelf / StatPearls (NBK535358)',
         badge: 'NCBI StatPearls',
+        disease: 'Keloid',
         url: 'https://www.ncbi.nlm.nih.gov/books/NBK535358/'
       },
       {
         title: 'Shingles (Herpes Zoster): Clinical Overview and Transmission',
         source: 'CDC (Centers for Disease Control and Prevention)',
         badge: 'CDC Official',
+        disease: 'Herpes Zoster',
         url: 'https://www.cdc.gov/shingles/about/index.html'
       },
       {
         title: 'Scabies: Biology, Clinical Features, and Group Treatment Guidelines',
         source: 'CDC Parasites & Global Health',
         badge: 'CDC Official',
+        disease: 'Skabies / Kudis',
         url: 'https://www.cdc.gov/parasites/scabies/'
       }
     ];
 
-    function renderSymptoms() {
-      const container = document.getElementById('symptoms-container');
-      container.innerHTML = '';
+    let donutChartInstance = null;
+
+    function navigate(viewName) {
+      const views = ['dashboard', 'riwayat', 'diagnosa', 'hasil', 'penyakit', 'gejala', 'aturan', 'artikel', 'user', 'password'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.style.display = 'none';
+        const m = document.getElementById(`menu-${v}`);
+        if (m) m.classList.remove('active');
+      });
+
+      const target = document.getElementById(`view-${viewName}`);
+      if (target) target.style.display = 'block';
+      const activeMenu = document.getElementById(`menu-${viewName}`);
+      if (activeMenu) activeMenu.classList.add('active');
+
+      if (viewName === 'riwayat') {
+        renderRiwayat();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleSidebar(e) {
+      e.preventDefault();
+      const sidebar = document.getElementById('sidebarNav');
+      sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function renderRiwayat() {
+      const tbody = document.getElementById('riwayat-table-body');
+      tbody.innerHTML = '';
+      const counts = {};
+
+      riwayatData.forEach((row, idx) => {
+        counts[row.penyakit] = (counts[row.penyakit] || 0) + 1;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="text-center font-weight-bold text-muted">${idx + 1}</td>
+          <td>${row.tanggal}</td>
+          <td>${row.penyakit}</td>
+          <td><span class="badge-cf">${row.cf.toFixed(2)}</span></td>
+          <td class="text-center">
+            <button onclick="lihatDetail('${row.nama}', '${row.penyakit}', '${row.persen}', '${row.tanggal}')" class="btn-detail">
+              <i class="far fa-eye"></i> Detail
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('dash-total-riwayat').innerText = riwayatData.length;
+
+      // Render Donut Chart
+      const labels = Object.keys(counts);
+      const data = Object.values(counts);
+      const colors = ['#F59E0B', '#38BDF8', '#F43F5E', '#0D9488', '#8B5CF6'];
+      const total = riwayatData.length;
+
+      let legendHtml = '';
+      labels.forEach((l, i) => {
+        const pct = total > 0 ? Math.round((data[i] / total) * 100) : 0;
+        const c = colors[i % colors.length];
+        legendHtml += `<div class='mb-1 d-flex align-items-center'>
+          <span style='display:inline-block; width:12px; height:12px; background-color:${c}; margin-right:8px; border-radius:2px;'></span>
+          <span>${l} <strong>${pct}%</strong></span></div>`;
+      });
+      document.getElementById('chartLegend').innerHTML = legendHtml;
+
+      const ctx = document.getElementById('grafikDonut').getContext('2d');
+      if (donutChartInstance) {
+        donutChartInstance.destroy();
+      }
+      donutChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: colors,
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: { display: false },
+          cutoutPercentage: 45
+        }
+      });
+    }
+
+    function renderSymptomsTable() {
+      const tbody = document.getElementById('symptoms-table-body');
+      tbody.innerHTML = '';
       symptoms.forEach(s => {
-        const item = document.createElement('div');
-        item.id = `item-${s.code}`;
-        item.className = 'p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-slate-50 transition';
-        item.innerHTML = `
-          <label class="flex items-start space-x-2.5 cursor-pointer flex-1">
-            <input type="checkbox" id="chk-${s.code}" onchange="onSymptomCheck('${s.code}')" class="mt-1 w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer">
-            <span class="text-xs sm:text-sm text-slate-800 leading-snug">
-              <strong class="font-mono text-teal-700 mr-1">${s.code}</strong> ${s.name}
-            </span>
-          </label>
-          <div class="sm:w-48 pl-6 sm:pl-0">
-            <select id="cf-${s.code}" disabled class="w-full text-xs border border-slate-200 rounded px-2.5 py-1.5 bg-slate-100 text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500">
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="text-center">
+            <input type="checkbox" id="chk_${s.code}" onchange="toggleSelect('${s.code}')">
+          </td>
+          <td class="font-weight-bold font-italic text-muted">${s.code}</td>
+          <td>
+            <label for="chk_${s.code}" class="mb-0 cursor-pointer">${s.name}</label>
+          </td>
+          <td>
+            <select id="cf_${s.code}" class="form-control form-control-sm" disabled>
               <option value="1.0">Sangat Yakin (1.0)</option>
               <option value="0.8" selected>Yakin (0.8)</option>
               <option value="0.6">Cukup Yakin (0.6)</option>
               <option value="0.4">Sedikit Yakin (0.4)</option>
               <option value="0.2">Tidak Yakin (0.2)</option>
             </select>
-          </div>
+          </td>
         `;
-        container.appendChild(item);
+        tbody.appendChild(tr);
       });
     }
 
-    function renderArticles() {
-      const container = document.getElementById('articles-container');
-      container.innerHTML = '';
+    function toggleSelect(code) {
+      const chk = document.getElementById(`chk_${code}`);
+      const sel = document.getElementById(`cf_${code}`);
+      sel.disabled = !chk.checked;
+    }
+
+    function renderMasterData() {
+      // Render Penyakit
+      const pBody = document.getElementById('penyakit-table-body');
+      pBody.innerHTML = '';
+      let n = 1;
+      Object.values(diseases).forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="text-center">${n++}</td>
+          <td class="font-weight-bold" style="color: var(--primary-teal);">${p.code}</td>
+          <td><strong>${p.name}</strong></td>
+          <td><span class="badge badge-${p.category === 'Menular' ? 'danger' : 'success'} p-1">${p.category}</span></td>
+          <td><span class="badge badge-warning p-1">${p.severity}</span></td>
+          <td class="small text-muted">${p.sol.substring(0, 100)}...</td>
+        `;
+        pBody.appendChild(tr);
+      });
+
+      // Render Gejala
+      const gBody = document.getElementById('gejala-table-body');
+      gBody.innerHTML = '';
+      symptoms.forEach((g, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="text-center">${idx + 1}</td>
+          <td class="font-weight-bold font-monospace" style="color: var(--primary-teal);">${g.code}</td>
+          <td>${g.name}</td>
+        `;
+        gBody.appendChild(tr);
+      });
+
+      // Render Aturan
+      const aBody = document.getElementById('aturan-table-body');
+      aBody.innerHTML = '';
+      let rIdx = 1;
+      Object.keys(rules).forEach(pCode => {
+        Object.keys(rules[pCode]).forEach(sCode => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="text-center">${rIdx++}</td>
+            <td class="font-weight-bold text-muted">R${String(rIdx - 1).padStart(2, '0')}</td>
+            <td>${pCode} - ${diseases[pCode].name}</td>
+            <td>${sCode} - ${symptoms.find(s => s.code === sCode).name}</td>
+            <td class="text-center font-weight-bold" style="color: var(--primary-teal);">${rules[pCode][sCode].toFixed(2)}</td>
+          `;
+          aBody.appendChild(tr);
+        });
+      });
+
+      // Render Artikel
+      const artContainer = document.getElementById('artikel-container');
+      artContainer.innerHTML = '';
       medicalArticles.forEach(art => {
-        const div = document.createElement('div');
-        div.className = 'p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between';
-        div.innerHTML = `
-          <div>
-            <span class="inline-block bg-teal-100 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded mb-1.5">${art.badge}</span>
-            <h5 class="font-bold text-slate-900 leading-snug mb-1">${art.title}</h5>
-            <p class="text-[11px] text-slate-500 mb-2">${art.source}</p>
-          </div>
-          <div class="pt-2 border-t border-slate-200/60 text-right">
-            <a href="${art.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-teal-600 hover:text-teal-800 font-bold text-xs underline">
-              Buka Referensi <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[10px]"></i>
-            </a>
+        const col = document.createElement('div');
+        col.className = 'col-md-6 mb-4';
+        col.innerHTML = `
+          <div class="card-article h-100 p-4 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge-source">${art.badge}</span>
+                <span class="small font-weight-bold" style="color: var(--secondary-slate);">${art.disease}</span>
+              </div>
+              <h6 class="font-weight-bold text-dark mb-1" style="font-size: 0.98rem; line-height: 1.4;">
+                ${art.title}
+              </h6>
+              <p class="text-muted small mb-2"><i class="fas fa-university mr-1"></i> ${art.source}</p>
+            </div>
+            <div class="pt-2 border-top mt-2 text-right">
+              <a href="${art.url}" target="_blank" rel="noopener noreferrer" class="btn-visit">
+                Kunjungi Referensi <i class="fas fa-external-link-alt ml-1"></i>
+              </a>
+            </div>
           </div>
         `;
-        container.appendChild(div);
+        artContainer.appendChild(col);
       });
     }
 
-    function toggleArticles() {
-      const sec = document.getElementById('articles-section');
-      sec.classList.toggle('hidden');
-    }
-
-    function onSymptomCheck(code) {
-      const chk = document.getElementById(`chk-${code}`);
-      const sel = document.getElementById(`cf-${code}`);
-      const item = document.getElementById(`item-${code}`);
-      if (chk.checked) {
-        sel.disabled = false;
-        sel.className = 'w-full text-xs border border-teal-500 rounded px-2.5 py-1.5 bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-500';
-        item.classList.add('bg-teal-50/60');
-      } else {
-        sel.disabled = true;
-        sel.className = 'w-full text-xs border border-slate-200 rounded px-2.5 py-1.5 bg-slate-100 text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500';
-        item.classList.remove('bg-teal-50/60');
-      }
-      updateCount();
-    }
-
-    function updateCount() {
-      const count = document.querySelectorAll('input[type="checkbox"]:checked').length;
-      document.getElementById('count-selected').innerText = count;
-    }
-
-    function filterList() {
-      const q = document.getElementById('search-box').value.toLowerCase();
-      symptoms.forEach(s => {
-        const item = document.getElementById(`item-${s.code}`);
-        const match = s.code.toLowerCase().includes(q) || s.name.toLowerCase().includes(q);
-        item.style.display = match ? '' : 'none';
-      });
-    }
-
-    function resetForm() {
-      symptoms.forEach(s => {
-        const chk = document.getElementById(`chk-${s.code}`);
-        chk.checked = false;
-        onSymptomCheck(s.code);
-      });
-      document.getElementById('result-box').classList.add('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function prosesDiagnosa() {
+    function hitungDiagnosa() {
       const selected = [];
       const userCF = {};
 
       symptoms.forEach(s => {
-        const chk = document.getElementById(`chk-${s.code}`);
-        if (chk.checked) {
+        const chk = document.getElementById(`chk_${s.code}`);
+        if (chk && chk.checked) {
           selected.push(s.code);
-          userCF[s.code] = parseFloat(document.getElementById(`cf-${s.code}`).value);
+          userCF[s.code] = parseFloat(document.getElementById(`cf_${s.code}`).value);
         }
       });
 
       if (selected.length === 0) {
-        alert('Silakan centang minimal 1 gejala terlebih dahulu!');
+        alert('Silakan pilih minimal 1 gejala!');
         return;
       }
 
@@ -597,68 +1226,64 @@
       });
 
       if (hasil.length === 0) {
-        alert('Gejala yang Anda pilih tidak cocok dengan basis aturan penyakit manapun.');
+        alert('Gejala yang Anda pilih tidak cocok dengan basis aturan manapun.');
         return;
       }
 
       hasil.sort((a, b) => b.cf - a.cf);
-      tampilkanHasil(hasil);
-    }
-
-    function tampilkanHasil(hasil) {
       const top = hasil[0];
-      const pName = document.getElementById('patient-name').value || 'Pasien';
-      const pAge = document.getElementById('patient-age').value || '-';
-      const pGender = document.getElementById('patient-gender').value || '-';
 
-      document.getElementById('result-patient-info').innerText = `Pasien: ${pName} (${pGender}, ${pAge} tahun) • ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+      // Tambahkan ke riwayat
+      const pName = document.getElementById('diag-name').value || 'Pasien';
+      const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+      riwayatData.unshift({
+        id: riwayatData.length + 1,
+        tanggal: now,
+        nama: pName,
+        penyakit: top.info.name,
+        cf: top.cf,
+        persen: top.percentage + '%'
+      });
 
-      document.getElementById('res-disease').innerText = `${top.code} - ${top.info.name}`;
+      // Tampilkan hasil
+      document.getElementById('res-disease-header').innerText = top.info.name;
+      document.getElementById('res-disease-title').innerText = `${top.code} - ${top.info.name}`;
       document.getElementById('res-category').innerText = `Kategori: ${top.info.category}`;
-      document.getElementById('res-percentage').innerText = `${top.percentage}%`;
-      document.getElementById('res-cf').innerText = `CF Akhir: ${top.cf.toFixed(4)}`;
       document.getElementById('res-desc').innerText = top.info.desc;
       document.getElementById('res-solution').innerText = top.info.sol;
       document.getElementById('res-prevention').innerText = top.info.prev;
+      document.getElementById('res-percentage').innerText = `${top.percentage}%`;
+      document.getElementById('res-cf-val').innerText = `CF: ${top.cf.toFixed(4)}`;
 
-      const tbodySymp = document.getElementById('res-symptoms-table');
-      tbodySymp.innerHTML = '';
+      const mBody = document.getElementById('res-matched-body');
+      mBody.innerHTML = '';
       top.matched.forEach(m => {
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50';
         tr.innerHTML = `
-          <td class="py-2.5 px-3 font-mono font-bold text-teal-700">${m.code}</td>
-          <td class="py-2.5 px-3">${m.name}</td>
-          <td class="py-2.5 px-3 text-center font-mono">${m.cfUser.toFixed(2)}</td>
-          <td class="py-2.5 px-3 text-center font-mono">${m.cfPakar.toFixed(2)}</td>
-          <td class="py-2.5 px-3 text-center font-mono font-bold text-teal-700">${m.cfGejala.toFixed(4)}</td>
+          <td class="font-weight-bold" style="color: var(--primary-teal);">${m.code}</td>
+          <td>${m.name}</td>
+          <td class="text-center">${m.cfUser.toFixed(2)}</td>
+          <td class="text-center">${m.cfPakar.toFixed(2)}</td>
+          <td class="text-center font-weight-bold" style="color: var(--primary-teal);">${m.cfGejala.toFixed(4)}</td>
         `;
-        tbodySymp.appendChild(tr);
+        mBody.appendChild(tr);
       });
 
-      const tbodyRank = document.getElementById('res-ranking-table');
-      tbodyRank.innerHTML = '';
-      hasil.forEach((h, idx) => {
-        const tr = document.createElement('tr');
-        tr.className = idx === 0 ? 'bg-teal-50/70 font-semibold' : 'hover:bg-slate-50';
-        tr.innerHTML = `
-          <td class="py-2.5 px-3 text-center font-bold">${idx + 1}</td>
-          <td class="py-2.5 px-3">${h.code} - ${h.info.name}</td>
-          <td class="py-2.5 px-3 text-center">${h.info.category}</td>
-          <td class="py-2.5 px-3 text-center font-mono">${h.cf.toFixed(4)}</td>
-          <td class="py-2.5 px-3 text-center font-bold text-teal-700">${h.percentage}%</td>
-        `;
-        tbodyRank.appendChild(tr);
-      });
+      navigate('hasil');
+    }
 
-      const resBox = document.getElementById('result-box');
-      resBox.classList.remove('hidden');
-      resBox.scrollIntoView({ behavior: 'smooth' });
+    function lihatDetail(nama, penyakit, persen, tgl) {
+      document.getElementById('mNama').innerText = nama;
+      document.getElementById('mTgl').innerText = tgl;
+      document.getElementById('mPenyakit').innerText = penyakit;
+      document.getElementById('mPersen').innerText = persen;
+      $('#modalDetail').modal('show');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      renderSymptoms();
-      renderArticles();
+      renderSymptomsTable();
+      renderMasterData();
+      renderRiwayat();
     });
   </script>
 </body>
